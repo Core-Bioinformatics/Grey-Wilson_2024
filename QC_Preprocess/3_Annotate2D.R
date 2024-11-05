@@ -33,17 +33,17 @@ so@meta.data$Annotations[so@meta.data$clusters_7_SLM==5] <- 'Anterior foregut'
 so@meta.data$Annotations[so@meta.data$clusters_7_SLM==6] <- 'Hepatic Endonderm'
 so@meta.data$Annotations[so@meta.data$clusters_7_SLM==7] <- 'Endothelial'
 
-saveRDS(so,'Analysis/Objects/ProteinCoding/Annotated/D6-so-Final.rds')
+saveRDS(so,'D6-so-Final.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/D6",
+                        shiny.dir = "D6",
                         shiny.title='D6')
 #D10
 #K6 from D10 is removed
 s.genes <- cc.genes$s.genes
 g2m.genes <- cc.genes$g2m.genes
-so <- readRDS('/servers/iss-corescratch/ml2088/LottieGreyWilson/Analysis/Objects/ProteinCoding/D10-so.rds')
-ca <- readRDS('/servers/iss-corescratch/ml2088/LottieGreyWilson/Analysis/Objects/ProteinCoding/D10-ca.rds')
+so <- readRDS(' D10-so.rds')
+ca <- readRDS(' D10-ca.rds')
 clusters_7 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`7`$partitions[[1]]$mb
 ecc_7 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`7`$ecc
 
@@ -68,19 +68,19 @@ Idents(so) <- so@meta.data$clusters_7_SLM
 so <- subset(so,idents=c(1,2,3,4,5,7))
 so <- CellCycleScoring(so, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 so <- SCTransform(so, return.only.var.genes=FALSE, verbose=FALSE)
-clustassess_autom <- readRDS('Analysis/Objects/ProteinCoding/Annotated/D10-removeK6-ca.rds')
+clustassess_autom <- readRDS('D10-removeK6-ca.rds')
 embedding <- data.frame(clustassess_autom$Most_Abundant$`1750`$umap)
 so@reductions[["umap"]] <- CreateDimReducObject(embeddings = as.matrix(embedding), key = "UMAP_", assay = DefaultAssay(so))
 
 
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/D10-removeK6",
+                        shiny.dir = "D10-removeK6",
                         shiny.title='D10-removeK6')
 #D18
-so <- readRDS('/servers/iss-corescratch/ml2088/LottieGreyWilson/Analysis/Objects/ProteinCoding/D18-so.rds')
+so <- readRDS(' D18-so.rds')
 so <- CellCycleScoring(so, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-ca <- readRDS('/servers/iss-corescratch/ml2088/LottieGreyWilson/Analysis/Objects/ProteinCoding/D18-ca.rds')
+ca <- readRDS(' D18-ca.rds')
 clusters_9 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`9`$partitions[[1]]$mb
 ecc_9 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`9`$ecc
 
@@ -109,15 +109,15 @@ so@meta.data$Annotations[so@meta.data$clusters_9_SLM==8] <- 'Trachea Progenitor'
 so@meta.data$Annotations[so@meta.data$clusters_9_SLM==9] <- 'Anterior foregut'
 
 
-saveRDS(so,'Analysis/ProteinCoding/Annotated/D18-so-Final.rds')
+saveRDS(so,'D18-so-Final.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/D18",
+                        shiny.dir = "",
                         shiny.title='D18')
 #D23
-so <- readRDS('Analysis/Objects/ProteinCoding/D23-so.rds')
+so <- readRDS('D23-so.rds')
 so <- CellCycleScoring(so, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-ca <- readRDS('Analysis/Objects/ProteinCoding/D23-ca.rds')
+ca <- readRDS('D23-ca.rds')
 clusters_11 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`11`$partitions[[1]]$mb
 ecc_11 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`11`$ecc
 
@@ -145,33 +145,33 @@ so@meta.data$Annotations[so@meta.data$clusters_11_SLM==10] <- 'Cardiomyocytes'
 so@meta.data$Annotations[so@meta.data$clusters_11_SLM==11] <- 'Endothelial'
 
 
-saveRDS(so,'Analysis/Objects/ProteinCoding/Annotated/D23-so-Final.rds')
+saveRDS(so,'D23-so-Final.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/D23",
+                        shiny.dir = "D23",
                         shiny.title='D23')
 
 #Now Reverse annotate the 2D overall timepoint
 
-so <- readRDS('Analysis/ProteinCoding/Annotated/D6-so-Final.rds')
+so <- readRDS('D6-so-Final.rds')
 D6 <- so@meta.data[c('Annotations')]
-so <- readRDS('Analysis/ProteinCoding/Annotated/D10-removeK6-so.rds')
+so <- readRDS('D10-removeK6-so.rds')
 D10 <- so@meta.data[c('Annotations')]
-so <- readRDS('Analysis/ProteinCoding/Annotated/D18-so-Final.rds')
+so <- readRDS('D18-so-Final.rds')
 D18 <- so@meta.data[c('Annotations')]
-so <- readRDS('Analysis/ProteinCoding/Annotated/D23-so-Final.rds')
+so <- readRDS('D23-so-Final.rds')
 D23 <- so@meta.data[c('Annotations')]
 
 anno <- rbind(D6,D10,D18,D23)
-so <- readRDS('Analysis/ProteinCoding/2D-Timecourse-so.rds')
+so <- readRDS('2D-Timecourse-so.rds')
 meta <- so@meta.data
 meta <- merge(meta,anno,by = "row.names", all = TRUE)
 rownames(meta) <- meta$Row.names
 meta$Row.names <- NULL
 so@meta.data <- meta
-saveRDS(so,'Analysis/ProteinCoding/Annotated/2D-Timecourse-so-annotated.rds')
-so <- readRDS('Analysis/ProteinCoding/Annotated/2D-Timecourse-so-annotated.rds')
-ca <- readRDS('Analysis/ProteinCoding/2D-Timecourse-ca.rds')
+saveRDS(so,'2D-Timecourse-so-annotated.rds')
+so <- readRDS('2D-Timecourse-so-annotated.rds')
+ca <- readRDS('2D-Timecourse-ca.rds')
 clusters_8 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`8`$partitions[[1]]$mb
 ecc_8 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`8`$ecc
 
@@ -191,7 +191,7 @@ so@meta.data <- cbind(so@meta.data,embedding)
 Idents(so) <- so@meta.data$Annotations
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = 'Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/2D-Annotated',
+                        shiny.dir = '2D-Annotated',
                         shiny.title='2D-Annotated')
 
 

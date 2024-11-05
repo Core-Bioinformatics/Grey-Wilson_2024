@@ -3,12 +3,12 @@ library(rhdf5)
 library(dplyr)
 library(ggplot2)
 
-out.dir <- '/Volumes/T7Shield/Lottie/Analysis/MutiOmicsIntegration/'
+out.dir <- 'MutiOmicsIntegration/'
 
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/CarolaFromAndi/so_merged_100k_without_14w_new_MA-clustassess.rds')
+so <- readRDS('so_merged_100k_without_14w_new_MA-clustassess.rds')
 #I think the annotations are on this app so_merged_100k_without_14w_new_MA
 
-meta <- as.data.frame(readRDS('/Volumes/T7Shield/Lottie/foetal-liver-apps/new_merge_nov22/so_merged_100k_without_14w_new_MA/sc1meta.rds'))
+meta <- as.data.frame(readRDS('so_merged_100k_without_14w_new_MA/sc1meta.rds'))
 meta <- meta[c('sampleID','celltypes','UMAP_1','UMAP_2')]
 rownames(meta) <- meta$sampleID
 
@@ -20,7 +20,7 @@ someta$sampleID <- NULL
 so@meta.data <- someta
 DimPlot(so,group.by = 'celltypes')
 
-pc_genes <- readLines('/Volumes/T7Shield/resources/refdata-cellranger-arc-GRCh38-2020-A-2.0.0/genes/pcGenes.txt')
+pc_genes <- readLines('pcGenes.txt')
 counts <- GetAssayData(so, assay = "RNA")
 counts <- counts[which(rownames(counts) %in% pc_genes),]
 so <- subset(so, features = rownames(counts))
@@ -77,7 +77,7 @@ bottom_percent <- function(mat, rownames) {
   
   return(result)
 }
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/3D-Timecourse.rds')
+so <- readRDS('3D-Timecourse.rds')
 Idents(so) <- so@meta.data$Annotations
 markers <- FindAllMarkers(so, logfc.threshold=0.1, min.pct=0.4, verbose=T)
 
@@ -129,12 +129,13 @@ p <- ggplot2::ggplot(df_mat, ggplot2::aes(as.factor(variable), as.factor(age))) 
         ggplot2::ylab('') +
         ggplot2::labs(fill = 'Proportion of cells')+
         ggplot2::theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/MarkersCarolaIntegration/FinalMethod/3DvsCarolaHep,svg", plot = p, device = "svg", width = 6, height = 9)
+ggsave("3DvsInVivoHep,svg", plot = p, device = "svg", width = 6, height = 9)
+
 #Save contribuiting markers
 markers_sig <- markers[markers$p_val_adj<0.05,]
-write.csv(markers_sig,paste0(out.dir,'3D_CarolaHepMarkers.csv'),quote = F,row.names = F)
+write.csv(markers_sig,paste0(out.dir,'3D_HepMarkers.csv'),quote = F,row.names = F)
 
-#Now iHBO vs Carola Hep, feedback here was that we do not need the iHBO chl
+
 calculateMarkerSim <- function(expRef,so,topPercent,p,timepoints,logfc,min.pct){
   
   markers <- FindAllMarkers(so, logfc.threshold=logfc, min.pct=min.pct, verbose=T)
@@ -186,28 +187,28 @@ calculateMarkerSim <- function(expRef,so,topPercent,p,timepoints,logfc,min.pct){
            ggplot2::labs(fill = 'Proportion of cells')+
            ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5)))
 }
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/iHBO-Timecourse.rds')
+so <- readRDS('iHBO-Timecourse.rds')
 Idents(so) <- so@meta.data$ID
 timepoints <-c('iHB0_5-7','iHB0_Hc')
 p <- calculateMarkerSim(exp,so,0.3,0.1,timepoints,0.5,0.5)
 p
-pdf(paste0(out.dir,'iHBO_CarolaHep.pdf'),height=10,width=5)
+pdf(paste0(out.dir,'iHBO_InVivoHep.pdf'),height=10,width=5)
 p
 dev.off()
 #2D vs multiomics
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/2D-Timecourse.rds')
+so <- readRDS('2D-Timecourse.rds')
 Idents(so) <- so@meta.data$Annotations
 timepoints <-c('Posterior foregut','Proliferative posterior foregut','Hepatic endoderm (D6)',
                'Hepatic endoderm (D10)','Early HPB','Early HB')
 #Remember to change to the top 20% instead of 25
 p <- calculateMarkerSim(exp,so,0.2,0.001,timepoints,0.2,0.7)
 p
-pdf(paste0(out.dir,'2D_CarolaHep.pdf'),height=10,width=5)
+pdf(paste0(out.dir,'2D_InVivoHep.pdf'),height=10,width=5)
 p
 dev.off()
 
 #iHBO to organoids
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/iHBO-Timecourse.rds')
+so <- readRDS('iHBO-Timecourse.rds')
 Idents(so) <- so@meta.data$ID
 timepoints <-c('iHB0_5-7','iHB0_Hc','iHB0_Chl')
 calculateMarkerSimMod <- function(expRef,so,topPercent,p,timepoints,logfc,min.pct){
@@ -231,7 +232,7 @@ calculateMarkerSimMod <- function(expRef,so,topPercent,p,timepoints,logfc,min.pc
     
     selected_cell_ages <- meta %>% filter(cell %in% selected_cells)
     df[,t] <- table(selected_cell_ages$Annotations)
-    df$Total <- table(Carola@meta.data$Annotations)
+    df$Total <- table(InVivo@meta.data$Annotations)
     df_proportions <- df/df$Total
     df_proportions <- df_proportions %>% select(-contains("Var1"))
     df_proportions$Total.Freq <- NULL
@@ -261,20 +262,20 @@ calculateMarkerSimMod <- function(expRef,so,topPercent,p,timepoints,logfc,min.pc
            ggplot2::labs(fill = 'Proportion of cells')+
            ggplot2::theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)))
 }
-Carola <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/CarolaObjectCAnew/Carola-Timecourse-so-stableClusters-Annotated.rds')
-expCarolaOrg <- as.matrix(Carola@assays$RNA$counts)
+InVivo <- readRDS('InVivo-Timecourse-so-stableClusters-Annotated.rds')
+expInVivoOrg <- as.matrix(InVivo@assays$RNA$counts)
 
-meta <- Carola@meta.data[c('Annotations')]
+meta <- InVivo@meta.data[c('Annotations')]
 meta$cell <- rownames(meta)
 timepoints <-c('iHB0_5-7')
-p <- calculateMarkerSimMod(expCarolaOrg,so,0.4,0.05,timepoints,0.1,0.4)
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/MarkersCarolaIntegration/FinalMethod/iHBO5-7vsCarolaOrg.svg", plot = p, device = "svg", width = 6, height = 9)
+p <- calculateMarkerSimMod(expInVivoOrg,so,0.4,0.05,timepoints,0.1,0.4)
+ggsave("/iHBO5-7vsInVivoOrg.svg", plot = p, device = "svg", width = 6, height = 9)
 timepoints <-c('iHB0_Chl')
-p <- calculateMarkerSimMod(expCarolaOrg,so,0.5,0.05,timepoints,0.1,0.4)
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/MarkersCarolaIntegration/FinalMethod/iHBOChlvsCarolaOrg.svg", plot = p, device = "svg", width = 6, height = 9)
+p <- calculateMarkerSimMod(expInVivoOrg,so,0.5,0.05,timepoints,0.1,0.4)
+ggsave("iHBOChlvsInVivoOrg.svg", plot = p, device = "svg", width = 6, height = 9)
 timepoints <-c('iHB0_Hc')
-p <- calculateMarkerSimMod(expCarolaOrg,so,0.45,0.05,timepoints,0.1,0.4)
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/MarkersCarolaIntegration/FinalMethod/iHBOHcvsCarolaOrg.svg", plot = p, device = "svg", width = 6, height = 9)
+p <- calculateMarkerSimMod(expInVivoOrg,so,0.45,0.05,timepoints,0.1,0.4)
+ggsave("iHBOHcvsInVivoOrg.svg", plot = p, device = "svg", width = 6, height = 9)
 
 
 
@@ -289,31 +290,7 @@ logfc_values <- seq(0.1, 1.0, by = 0.1)
 min.pct_values <- seq(0.1, 0.9, by = 0.1)
 
 
-pdf("all_plots.pdf", height=10, width=8)
 
-# Iterate over the values
-for (tp in topPercent_values) {
-  for (pv in p_values) {
-    for (lfc in logfc_values) {
-      for (mp in min.pct_values) {
-        p <- calculateMarkerSim(expRef = exp, so = so, topPercent = tp, p = pv, timepoints = timepoints, logfc = lfc, min.pct = mp)
-        p <- p + ggtitle(paste("topPercent =", tp, ", p =", pv, ", logfc =", lfc, ", min.pct =", mp))
-        print(p)
-      }
-    }
-  }
-}
-dev.off()
-
-
-
-
-
-pdf(paste0(out.dir,timepoint,'_','_InteractionPlots.pdf'))
-write_svg(, file, title = "test.svg")
-pdf(paste0(out.dir,timepoint,'_',pathway,'.pdf'))
-
-#Now I need to make the plot Lottie likes
 top_percent <- function(mat, rownames) {
   valid_rownames <- rownames %in% rownames(mat)
   if (any(!valid_rownames)) {
@@ -411,9 +388,9 @@ calculateMarkerSim <- function(expRef,so,topPercent,p,timepoints,logfc,min.pct){
            ggplot2::labs(fill = 'Proportion of cells')+
            ggplot2::theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5)))
 }
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/iHBO-Timecourse.rds')
+so <- readRDS('iHBO-Timecourse.rds')
 Idents(so) <- so@meta.data$ID
 timepoints <-c('iHB0_5-7','iHB0_Hc')
 p <- calculateMarkerSim(exp,so,topPercent,pv,timepoints,logfc,min.pct)
 p
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/MarkersCarolaIntegration/FinalMethod/iHBOHcvsCarolaHep.svg", plot = p, device = "svg", width = 6, height = 9)
+ggsave("iHBOHcvsInVivoHep.svg", plot = p, device = "svg", width = 6, height = 9)

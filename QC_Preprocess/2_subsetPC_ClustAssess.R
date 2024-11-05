@@ -72,13 +72,13 @@ makeCA <- function(so,ncores,outdir_obj,outdir_app,assay_name='SCT',project_name
   )
   
 }
-pc_genes <- readLines('/home/USSR/ml2088/software/cellranger/refdata-gex-GRCh38-2020-A/genes/pc_genes.txt')
+pc_genes <- readLines('pc_genes.txt')
 
 #Load the main object
 
 outdir_obj <- 'Analysis/Objects/ProteinCoding/'
 outdir_app <- 'Analysis/Apps/ProteinCoding/'
-so <- readRDS('/Analysis/Objects/LottieGreyWilson-RAW-noMTRP.rds')
+so <- readRDS('LottieGreyWilson-RAW-noMTRP.rds')
 counts <- GetAssayData(so, assay = "RNA")
 counts <- counts[which(rownames(counts) %in% pc_genes),]
 so <- subset(so, features = rownames(counts))
@@ -99,13 +99,13 @@ library_to_id_map <- c('C1' = 'D6',
                        'D8' = 'iHB0_Chl')
 so@meta.data$ID <- library_to_id_map[so@meta.data$library]
 
-doublets1 <- read.csv('/Analysis/DoubletDetection/doublets_doubletdetection.csv')
+doublets1 <- read.csv('doublets_doubletdetection.csv')
 doublets1 <- doublets1 %>%
   mutate(Doublet_dd = if_else(Doublet_dd == 0, 'False', 'True'))
 doublets1$Barcode <- sapply(strsplit(doublets1$bc, "_"), function(x) x[2])
 doublets1$bc <- NULL
 
-doublets2 <- read.csv('/Analysis/DoubletDetection/doublets_scrublet.csv')
+doublets2 <- read.csv('doublets_scrublet.csv')
 doublets2$Barcode <- sapply(strsplit(doublets2$bc, "_"), function(x) x[2])
 doublets2$bc <- NULL
 doublets <- merge(doublets1,doublets2,by='Barcode')

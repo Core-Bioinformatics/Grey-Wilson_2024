@@ -1,7 +1,11 @@
+library(dplyr)
+library(Seurat)
+library(ShinyCell)
+library(ClustAssess)
 ####
-so <- readRDS('Analysis/Objects/ProteinCoding/3D-Timecourse-so.rds')
+so <- readRDS('3D-Timecourse-so.rds')
 so <- CellCycleScoring(so, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-ca <- readRDS('Analysis/Objects/ProteinCoding/3D-Timecourse-ca.rds')
+ca <- readRDS('3D-Timecourse-ca.rds')
 clusters_21 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`21`$partitions[[1]]$mb
 ecc_21 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`21`$ecc
 
@@ -48,9 +52,9 @@ Idents(so) <- so@meta.data$clusters_21_SLM
 #Remove 21
 so <- subset(so,idents=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20))
 so <- SCTransform(so, return.only.var.genes=FALSE, verbose=FALSE)
-saveRDS(so,'Analysis/Objects/ProteinCoding/Annotated/3D-so-FinalNoClustering.rds')
+saveRDS(so,'3D-so-FinalNoClustering.rds')
 
-clustassess_autom <-readRDS('Analysis/Objects/ProteinCoding/Annotated/3D-ca-FinalNoClustering.rds')
+clustassess_autom <-readRDS('3D-ca-FinalNoClustering.rds')
 #18 clusters
 so <- CellCycleScoring(so, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
 clusters_18 <- clustassess_autom$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`18`$partitions[[1]]$mb
@@ -67,21 +71,21 @@ so@meta.data <- cbind(so@meta.data,embedding)
 
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/3D-Timecourse",
+                        shiny.dir = "3D-Timecourse",
                         shiny.title='3D-Timecourse')
 
 
 #Now I need to do the opposite, from the 3D, annotate LBO,P0,P2
-so <- readRDS('Analysis/ProteinCoding/Annotated/3D-so-FinalNoClustering.rds')
+so <- readRDS('3D-so-FinalNoClustering.rds')
 anno <- so@meta.data[c('Annotations')]
-so <-  readRDS('Analysis/ProteinCoding/ProteinCoding/LBO-so.rds')
+so <-  readRDS('LBO-so.rds')
 meta <- so@meta.data
 meta <- merge(meta,anno,by='row.names', all.x = TRUE)
 rownames(meta) <- meta$Row.names
 meta$Row.names <- NULL
 so@meta.data <- meta
 
-ca <- readRDS('Analysis/ProteinCoding/ProteinCoding/LBO-ca.rds')
+ca <- readRDS('LBO-ca.rds')
 clusters_7 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`7`$partitions[[1]]$mb
 ecc_7 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`7`$ecc
 
@@ -99,20 +103,20 @@ embedding$clusters_11_SLM <- as.factor(clusters_11)
 embedding <- embedding[c('ecc_7','clusters_7_SLM','ecc_11','clusters_11_SLM')]
 embedding <- embedding[rownames(embedding) %in% rownames(so@meta.data), ]
 so@meta.data <- cbind(so@meta.data,embedding)
-saveRDS(so,'Analysis/ProteinCoding/Annotated/LBO-so-annotated.rds')
+saveRDS(so,'LBO-so-annotated.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/LBO-Annotated",
+                        shiny.dir = "LBO-Annotated",
                         shiny.title='LBO')
 #P0
-so <-  readRDS('Analysis/ProteinCoding/ProteinCoding/P0-so.rds')
+so <-  readRDS('P0-so.rds')
 meta <- so@meta.data
 meta <- merge(meta,anno,by='row.names', all.x = TRUE)
 rownames(meta) <- meta$Row.names
 meta$Row.names <- NULL
 so@meta.data <- meta
 
-ca <- readRDS('Analysis/ProteinCoding/ProteinCoding/P0-ca.rds')
+ca <- readRDS('P0-ca.rds')
 clusters_5 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`5`$partitions[[1]]$mb
 ecc_5 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`5`$ecc
 
@@ -129,19 +133,19 @@ embedding$clusters_10_SLM <- as.factor(clusters_10)
 
 embedding <- embedding[c('ecc_5','clusters_5_SLM','ecc_10','clusters_10_SLM')]
 so@meta.data <- cbind(so@meta.data,embedding)
-saveRDS(so,'Analysis/ProteinCoding/Annotated/P0-so-annotated.rds')
+saveRDS(so,'P0-so-annotated.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/P0-Annotated",
+                        shiny.dir = "P0-Annotated",
                         shiny.title='P0')
 #P2
-so <-  readRDS('Analysis/ProteinCoding/ProteinCoding/P2-so.rds')
+so <-  readRDS('P2-so.rds')
 meta <- so@meta.data
 meta <- merge(meta,anno,by='row.names', all.x = TRUE)
 rownames(meta) <- meta$Row.names
 meta$Row.names <- NULL
 so@meta.data <- meta
-ca <- readRDS('Analysis/ProteinCoding/ProteinCoding/P2-ca.rds')
+ca <- readRDS('P2-ca.rds')
 clusters_4 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`4`$partitions[[1]]$mb
 ecc_4 <- ca$Most_Abundant$`1750`$clustering_stability$split_by_k$SLM$`4`$ecc
 
@@ -158,8 +162,8 @@ embedding$clusters_12_SLM <- as.factor(clusters_12)
 
 embedding <- embedding[c('ecc_4','clusters_4_SLM','ecc_12','clusters_12_SLM')]
 so@meta.data <- cbind(so@meta.data,embedding)
-saveRDS(so,'Analysis/ProteinCoding/Annotated/P2-so-annotated.rds')
+saveRDS(so,'P2-so-annotated.rds')
 scConf = ShinyCell::createConfig(so)
 ShinyCell::makeShinyApp(so, scConf, gene.mapping = TRUE, gex.assay = "SCT",
-                        shiny.dir = "Analysis/Apps/ProteinCoding/AnnotatedShinyCell/FinalAnnotation/P2-Annotated",
+                        shiny.dir = "P2-Annotated",
                         shiny.title='P2')

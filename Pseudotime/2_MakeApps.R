@@ -6,9 +6,9 @@ source("pseudotime_roots_generate_shiny.R")
 source("pseudotime_subset_generate_shiny.R")
 
 write_object.data_frame(
-  ids_df = read.csv("/Volumes/T9/Lottie/Analysis/pseudotime_sample_combinations5.csv", comment.char = "#"),
-  seurat_ca_corresp = read.csv("/Volumes/T9/Lottie/Analysis/pseudotime_so_CA_obj5.csv", comment.char = "#"),
-  target_app_dir = "/Volumes/T9/Lottie/Analysis/Apps/ProteinCoding/Pseudotime/",
+  ids_df = read.csv("pseudotime_sample_combinations5.csv", comment.char = "#"),
+  seurat_ca_corresp = read.csv("pseudotime_so_CA_obj5.csv", comment.char = "#"),
+  target_app_dir = "",
   use_closed_loops = FALSE,
   prefix = "",
   learn_graph_controls = list(
@@ -20,7 +20,7 @@ write_object.data_frame(
 
 
 write_object(
-  mon_obj = readRDS(file.path('/Volumes/T9/Lottie/Analysis/Apps/ProteinCoding/Pseudotime/3D_old/no_loop/Most_Abundant/3D-PSEUDOTIME/', "monocle_object.rds")),
+  mon_obj = readRDS(file.path('', "monocle_object.rds")),
   trajectory_id = paste('3D', 'HB', sep = "-"),
   start_genes = c('AFP'),
   end_genes = c('APOM'),
@@ -36,12 +36,12 @@ write_object(
   use_closed_loops = FALSE,
   use_partitions = FALSE,
   nodes_per_log10_cells = 30,
-  output_dir = file.path('/Volumes/T9/Lottie/Analysis/Apps/ProteinCoding/Pseudotime/secondApps/', '3D-HB')
+  output_dir = file.path('', '3D-HB')
 )
 
 
 write_object(
-  mon_obj = readRDS(file.path('/Volumes/T9/Lottie/Analysis/Apps/ProteinCoding/Pseudotime/MergedPseudotime/2D_clusterSubset/1750/', "monocle_object.rds")),
+  mon_obj = readRDS(file.path('', "monocle_object.rds")),
   trajectory_id = paste('2D', 'Subset', sep = "-"),
   start_genes = c('FOXA2'),
   end_genes = c('AFP'),
@@ -57,5 +57,5 @@ write_object(
   use_closed_loops = FALSE,
   use_partitions = FALSE,
   nodes_per_log10_cells = 30,
-  output_dir = file.path('/Volumes/T9/Lottie/Analysis/Apps/ProteinCoding/Pseudotime/secondApps/', '2D-Subset')
+  output_dir = file.path('', '2D-Subset')
 )

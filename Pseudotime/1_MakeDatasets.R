@@ -63,13 +63,13 @@ makeCA <- function(so,ncores,outdir_obj,assay_name='SCT',project_name){
   
 }
 
-outdir_obj <- '/Volumes/T9/Lottie/Analysis/ProteinCoding/MergedPseudotime/ca/'
+outdir_obj <- 'ca/'
 ncores <- 8
 options(warn=-1)
 
 
 #now 2d of selected clusters in lottes ppt
-so <- readRDS('/Volumes/T9/Lottie/Analysis/ProteinCoding/Annotated/2D-Timecourse-so-annotated-removeCells.rds')
+so <- readRDS('2D-Timecourse-so-annotated-removeCells.rds')
 Idents(so) <- so@meta.data$Annotations
 so <- subset(so, idents = c('Early HB','Early HPB','Hepatic endoderm',
                             'Hepatic Endonderm','Posterior foregut',
@@ -77,7 +77,7 @@ so <- subset(so, idents = c('Early HB','Early HPB','Hepatic endoderm',
                             'Proliferative cells to split'), invert = FALSE)
 gc()
 so <- SCTransform(so, vst.flavor = "v2", return.only.var.genes=FALSE, verbose=TRUE)
-saveRDS(so,'/Volumes/T9/Lottie/Analysis/ProteinCoding/MergedPseudotime/so/2D_clusterSubset.rds')
+saveRDS(so,'2D_clusterSubset.rds')
 
-so <- readRDS('/Volumes/T9/Lottie/Analysis/ProteinCoding/MergedPseudotime/so/2D_clusterSubset.rds')
+so <- readRDS('2D_clusterSubset.rds')
 makeCA(so,ncores,outdir_obj,'SCT','2D_clusterSubset')

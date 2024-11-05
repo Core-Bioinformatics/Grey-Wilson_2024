@@ -46,7 +46,7 @@ rp.genes=grep("^RP[SL]", rownames(so), value=FALSE, ignore.case=TRUE)
 so[['percent.mt']] = PercentageFeatureSet(so, features=rownames(so)[mt.genes])
 so[['percent.rp']] = PercentageFeatureSet(so, features=rownames(so)[rp.genes])
 
-pdf('Analysis/Plots/soQC.pdf')
+pdf('soQC.pdf')
 ggplot(so@meta.data, aes(x=library)) + geom_bar() + theme(axis.text.x=element_text(angle=45, hjust=1))
 VlnPlot(so, features = c("nFeature_RNA"), ncol = 1, pt.size=0,raster=FALSE)
 VlnPlot(so, features = c("nCount_RNA"), ncol = 1, pt.size=0,raster=FALSE)
@@ -70,17 +70,17 @@ length(rownames(so@meta.data))
 #107326
 so = so[-c(mt.genes, rp.genes),]
 so[['raw.seq.depth.no.MTRP']] = Matrix::colSums(GetAssayData(so, assay='RNA', slot='counts'))
-saveRDS(so,'Analysis/Objects/LottieGreyWilson-RAW-noMTRP.rds')
+saveRDS(so,'LottieGreyWilson-RAW-noMTRP.rds')
 
 # Separate the samples into experiment
-so <- readRDS('Analysis/Objects/LottieGreyWilson-RAW-noMTRP.rds')
+so <- readRDS('LottieGreyWilson-RAW-noMTRP.rds')
 so.timeSeries <- subset(x = so, idents = c('C1','D1','E1','F1','G8','H8','A2'))
 so.differentiation <- subset(x = so, idents = c('B8','C8','D8'))
 so.Carola <- subset(x = so, idents = c('A1','B1','G1','H1'))
 
-saveRDS(so.timeSeries,'Analysis/Objects/timeSeries-RAW-noMTRP.rds')
-saveRDS(so.differentiation,'Analysis/Objects/differentiation-RAW-noMTRP.rds')
-saveRDS(so.Carola,'Analysis/Objects/Carola-RAW-noMTRP.rds')
+saveRDS(so.timeSeries,'timeSeries-RAW-noMTRP.rds')
+saveRDS(so.differentiation,'differentiation-RAW-noMTRP.rds')
+saveRDS(so.Carola,'Carola-RAW-noMTRP.rds')
 
 
 obj_names <- c('timeSeries','differentiation','Carola')
@@ -101,9 +101,9 @@ library_to_id_map <- c('C1' = 'D6',
                        'A2' = 'LBO')
 so.timeSeries@meta.data$ID <- library_to_id_map[so.timeSeries@meta.data$library]
 
-saveRDS(so.timeSeries,'Analysis/Objects/timeSeries-SCTransformed-noMTRP.rds')
-saveRDS(so.differentiation,'Analysis/Objects/differentiation-SCTransformed-noMTRP.rds')
-saveRDS(so.Carola,'Analysis/Objects/Carola-SCTransformed-noMTRP.rds')
+saveRDS(so.timeSeries,'timeSeries-SCTransformed-noMTRP.rds')
+saveRDS(so.differentiation,'differentiation-SCTransformed-noMTRP.rds')
+saveRDS(so.Carola,'Carola-SCTransformed-noMTRP.rds')
 
 
   

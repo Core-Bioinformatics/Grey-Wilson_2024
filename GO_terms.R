@@ -3,7 +3,7 @@ library(gprofiler2)
 library(ggplot2)
 library(reshape2)
 library(viridis)
-so <- readRDS('/Volumes/T7Shield/Lottie/Analysis/ProteinCoding/Annotated/May2024Annotations/2D-Timecourse.rds')
+so <- readRDS('2D-Timecourse.rds')
 
 Idents(so) <- so@meta.data$Annotations
 CMMarkers <- FindMarkers(so,ident.1 = 'Cardiomyocytes', logfc.threshold=0.5)
@@ -22,7 +22,7 @@ resultsCM <- gost(query = sigCM,
                 custom_bg = allGenes)$result
 
 resultsCM <- apply(resultsCM,2,as.character)
-write.table(resultsCM, file = '/Volumes/T7Shield/Lottie/Analysis/MarkersPerTimePoint/2D-CM_GEO.tsv', quote = FALSE, row.names = FALSE, sep = '\t')
+write.table(resultsCM, file = '2D-CM_GO.tsv', quote = FALSE, row.names = FALSE, sep = '\t')
 
 resultsEnd <- gost(query = sigEnd, 
                    organism = "hsapiens", 
@@ -32,53 +32,8 @@ resultsEnd <- gost(query = sigEnd,
                    custom_bg = allGenes)$result
 
 resultsEnd <- apply(resultsEnd,2,as.character)
-write.table(resultsEnd, file = '/Volumes/T7Shield/Lottie/Analysis/MarkersPerTimePoint/2D-End_GEO.tsv', quote = FALSE, row.names = FALSE, sep = '\t')
-resultsCM <- as.data.frame(resultsCM)
-resultsEnd <- as.data.frame(resultsEnd)
+write.table(resultsEnd, file = '2D-End_GO.tsv', quote = FALSE, row.names = FALSE, sep = '\t')
 
-resultsCMfilter <- resultsCM[resultsCM$term_id %in% c('GO:0009653','GO:0048731','GO:0035295','GO:0072359','GO:0001944','GO:0001568','GO:0001525','GO:0030154','GO:0007507','GO:0003013'),]
-resultsEndfilter <- resultsEnd[resultsEnd$term_id %in% c('GO:0009653','GO:0072359','GO:0048731','GO:0030029','GO:0030016','GO:0043292','GO:0030017','GO:0007507','GO:0060047','GO:0061061','GO:0003012','GO:0003205','GO:0014706','GO:0048738'),]
-
-
-resultsCMfilter$ratio <- as.numeric(resultsCMfilter$intersection_size) / as.numeric(resultsCMfilter$term_size)
-resultsCMfilter$p_value <- as.numeric(resultsCMfilter$p_value)
-
-
-p <- ggplot(resultsCMfilter, aes(x = ratio, y = reorder(term_name, ratio))) +
-  geom_point(aes(size = intersection_size, color = -log10(p_value))) +
-  scale_color_gradient(low = "blue", high = "red") +
-  labs(
-    title = "Enriched terms Cardiomyocytes",
-    x = "Ratio",
-    y = "Terms",
-    color = "-log10(Pvalue)",
-    size = "Number"
-  ) +
-  guides(size = "none") +
-  theme_minimal() +
-  theme(axis.text.y = element_text(size = 12))
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/GEO_CM_basic.svg", plot = p, device = "svg", width = 10, height = 10)
-
-resultsEndfilter$ratio <- as.numeric(resultsEndfilter$intersection_size) / as.numeric(resultsEndfilter$term_size)
-resultsEndfilter$p_value <- as.numeric(resultsEndfilter$p_value)
-
-
-p <- ggplot(resultsEndfilter, aes(x = ratio, y = reorder(term_name, ratio))) +
-  geom_point(aes(size = intersection_size, color = -log10(p_value))) +
-  scale_color_gradient(low = "blue", high = "red") +
-  labs(
-    title = "Enriched terms Endothelial",
-    x = "Ratio",
-    y = "Terms",
-    color = "-log10(Pvalue)",
-    size = "Number"
-  ) +
-  guides(size = "none") +
-  theme_minimal() +
-  theme(axis.text.y = element_text(size = 12))
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/GEO_EN_basic.svg", plot = p, device = "svg", width = 10, height = 10)
-#####################
-#This analisys is not wanted
 comp <- 'Cardiomyocytes'
 Idents(so) <- so@meta.data$Annotations
 rest <- unique(so@meta.data$Annotations)
@@ -179,7 +134,7 @@ p <- ggplot(df_combined, aes(x = Cell_type, y = GO_term, size = Ratio, color = -
   geom_point() +
   scale_color_viridis_c() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Enriched GEO terms in Cardiomyocytes",
+  labs(title = "Enriched GO terms in Cardiomyocytes",
        x = "Cell Type",
        y = "GO Term",
        size = "Ratio",
@@ -190,7 +145,7 @@ p <- ggplot(df_combined, aes(x = Cell_type, y = GO_term, size = Ratio, color = -
     panel.grid.minor = element_blank(), 
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/GEO_CM_2_2.svg", plot = p, device = "svg", width = 10, height = 10)
+ggsave("GO_CM_2_2.svg", plot = p, device = "svg", width = 10, height = 10)
   
   
 
@@ -288,7 +243,7 @@ p <- ggplot(df_combined, aes(x = Cell_type, y = GO_term, size = Ratio, color = -
   geom_point() +
   scale_color_viridis_c() + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Enriched GEO terms in Endothelial",
+  labs(title = "Enriched GO terms in Endothelial",
        x = "Cell Type",
        y = "GO Term",
        size = "Ratio",
@@ -299,4 +254,4 @@ p <- ggplot(df_combined, aes(x = Cell_type, y = GO_term, size = Ratio, color = -
     panel.grid.minor = element_blank(), 
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
-ggsave("/Volumes/T7Shield/Lottie/Analysis/Plots/GEO_End_2_2.svg", plot = p, device = "svg", width = 10, height = 10)
+ggsave("GO_End_2_2.svg", plot = p, device = "svg", width = 10, height = 10)
