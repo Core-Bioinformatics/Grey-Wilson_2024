@@ -200,7 +200,7 @@ so <- readRDS('2D-Timecourse.rds')
 Idents(so) <- so@meta.data$Annotations
 timepoints <-c('Posterior foregut','Proliferative posterior foregut','Hepatic endoderm (D6)',
                'Hepatic endoderm (D10)','Early HPB','Early HB')
-#Remember to change to the top 20% instead of 25
+#Change to the top 20% instead of 25
 p <- calculateMarkerSim(exp,so,0.2,0.001,timepoints,0.2,0.7)
 p
 pdf(paste0(out.dir,'2D_InVivoHep.pdf'),height=10,width=5)
